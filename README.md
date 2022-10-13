@@ -16,14 +16,25 @@ import (
 	"iqdbAPI"
 )
 
-// Url: Search image using an external link
-// FilePath: Search using your local image file (Absolute Path)
-// Url and FilePath are optional parameters, you can use either of them.
+
 func main() {
+	// Url: Search image using an external link
+	// FilePath: Search using your local image file (Absolute Path)
+	// Url and FilePath are optional parameters, you can use either of them.
 	f := iqdbAPI.API(iqdbAPI.Options{
 		Url:      "https://i.pximg.net/img-master/img/2021/08/19/19/47/13/92104378_p0_master1200.jpg",
 		FilePath: "C:\\Users\\Harry\\GolandProjects\\test\\test.jpg"})
-	fmt.Println(f)
+	
+	
+	//Or you can call API1(url) or API2(filepath) directly
+	m := iqdbAPI.API2("C:\\Users\\Harry\\GolandProjects\\test\\test.jpg")
+	
+	q := iqdbAPI.API1("https://i.pximg.net/img-master/img/2021/08/19/19/47/13/92104378_p0_master1200.jpg")
+	
+	fmt.Println(q)
+	
+	
+	
 }
 ```
 ```go
