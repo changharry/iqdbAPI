@@ -3,7 +3,9 @@ A Go package for anime illustration searching on iqdb.org
 
 ## Usage:
 ```go
-iqdbAPI.API("https://xxx.xxx/xxx.jpg") 
+f := iqdbAPI.API(iqdbAPI.Options{
+Url: "https://xxx.xxx/xxx/xxx.jpg",
+FilePath: "X:\\XX\\xxx.jpg"})
 // return in JSON
 ```
 
@@ -22,7 +24,7 @@ func main() {
 	// FilePath: Search using your local image file (Absolute Path)
 	// Url and FilePath are optional parameters, you can use either of them.
 	f := iqdbAPI.API(iqdbAPI.Options{
-		Url:      "https://i.pximg.net/img-master/img/2021/08/19/19/47/13/92104378_p0_master1200.jpg",
+		Url: "https://i.pximg.net/img-master/img/2021/08/19/19/47/13/92104378_p0_master1200.jpg",
 		FilePath: "C:\\Users\\Harry\\GolandProjects\\test\\test.jpg"})
 	
 	
