@@ -4,8 +4,8 @@ A Go package for anime illustration searching on iqdb.org
 ## Usage:
 ```go
 f := iqdbAPI.API(iqdbAPI.Options{
-Url: "https://xxx.xxx/xxx/xxx.jpg",
-FilePath: "X:\\XX\\xxx.jpg"})
+	Url: "https://xxx.xxx/xxx/xxx.jpg", 
+	FilePath: "X:\\XX\\xxx.jpg"})
 // return in JSON
 ```
 
