@@ -3,5 +3,6 @@ package iqdbAPI
 // TO DO
 
 type Options struct {
-	UseAlternatives string
+	Url      string
+	FilePath string
 }

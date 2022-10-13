@@ -1,17 +1,30 @@
 package iqdbAPI
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
+	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"net/url"
-	"strings"
+	"os"
 )
 
-func API(target string) string {
+func API(input Options) string {
+	if input.FilePath != "" {
+		return API2(input.FilePath)
+	} else {
+		if input.Url != "" {
+			return API1(input.Url)
+		}
+	}
+	return "Invalid Input!"
+}
+
+func API1(target string) string {
 	// Request the HTML page.
+
 	res, err := http.PostForm("https://iqdb.org/",
 		url.Values{"url": {target}})
 	if err != nil {
@@ -21,47 +34,44 @@ func API(target string) string {
 	if res.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
+	result := HtmlProcessor(res)
+	return result
+}
 
-	// Load the HTML document
-	doc, err := goquery.NewDocumentFromReader(res.Body)
+func API2(filename string) string {
+	bodyBuf := &bytes.Buffer{}
+	bodyWriter := multipart.NewWriter(bodyBuf)
+
+	// this step is very important
+	fileWriter, err := bodyWriter.CreateFormFile("file", filename)
+	if err != nil {
+		fmt.Println("error writing to buffer")
+		log.Fatal(err)
+	}
+
+	// open file handle
+	fh, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("error opening file")
+		log.Fatal(err)
+	}
+	defer fh.Close()
+
+	//iocopy
+	_, err = io.Copy(fileWriter, fh)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var resp = Response{
-		Success: false,
-		Results: nil,
-	}
-	// Find the review items
-	doc.Find("#pages.pages div table").Each(func(i int, s *goquery.Selection) {
-		if i > 0 {
-			// For each item found, get the title
-			resultUrl, _ := s.Find(".image a").Attr("href")
-			resultHead := s.Find("tr th").Text()
-			resultTitles, _ := s.Find(".image img").Attr("title")
-			split := strings.Fields(s.Find("tr:nth-child(4) td").Text())
-			split0 := strings.Split(split[0], "×")
-			resultHeight := split0[0]
-			resultWidth := split0[1]
-			resultCategory := split[1]
-			resultSimilarity := s.Find("tr:nth-child(5) td").Text()
+	contentType := bodyWriter.FormDataContentType()
+	bodyWriter.Close()
 
-			resp.Results = append(resp.Results, Result{
-				Head:       resultHead,
-				Url:        resultUrl,
-				Titles:     resultTitles,
-				Height:     resultHeight,
-				Width:      resultWidth,
-				Category:   resultCategory,
-				Similarity: resultSimilarity,
-			})
-		}
-	})
-	resp.Success = true
-	respP := &resp
-	j, err := json.Marshal(respP)
+	resp, err := http.Post("https://iqdb.org/", contentType, bodyBuf)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
-	return string(j)
+	defer resp.Body.Close()
+	result := HtmlProcessor(resp)
+	return result
+
 }
