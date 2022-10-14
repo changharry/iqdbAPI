@@ -28,6 +28,9 @@ func HtmlProcessor(res *http.Response) string {
 			resultTitles, _ := s.Find(".image img").Attr("title")
 			split := strings.Fields(s.Find("tr:nth-child(4) td").Text())
 			split0 := strings.Split(split[0], "×")
+			if len(split) <= 1 || len(split0) <= 1 {
+				return
+			}
 			resultHeight := split0[0]
 			resultWidth := split0[1]
 			resultCategory := split[1]
