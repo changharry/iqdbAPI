@@ -1,4 +1,4 @@
-module iqdbAPI
+module github.com/changharry/iqdbAPI
 
 go 1.18
 
